@@ -27,6 +27,7 @@ function sendStartMessage(ctx) {
                     {text: "CoinMarketcap", url: "https://www.cryptocompare.com/"}
                 ]
             ]
+            
         }
     });
 }
