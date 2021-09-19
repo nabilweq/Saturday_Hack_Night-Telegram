@@ -27,7 +27,7 @@ function sendStartMessage(ctx) {
                     {text: "CoinMarketcap", url: "https://www.cryptocompare.com/"}
                 ]
             ]
-            
+
         }
     });
 }
@@ -53,6 +53,49 @@ bot.action('price', ctx => {
                 ]
             }
         });
+});
+
+let priceActionList = ["price-BTC", "price-ETH", "price-BCH", "price-LTC"];
+bot.action(priceActionList, async ctx => {
+
+    let symbol = ctx.match.input.split('-')[1];
+
+    try {
+
+        let res = await axios.get(`https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${symbol}&tsyms=USD&api_key=${apiKey} `)
+
+        let data = res.data.DISPLAY[symbol].USD;
+        console.log(data);
+
+        let message = 
+        `
+Symbol:  ${symbol}
+Price:  ${data.PRICE}
+Open:  ${data.OPENDAY}
+High:  ${data.HIGHDAY}
+Low:  ${data.LOWDAY}
+Supply:  ${data.SUPPLY}
+Market Cap:  ${data.MKTCAP}
+`;
+
+        ctx.deleteMessage();
+        bot.telegram.sendMessage(ctx.chat.id, message, 
+        {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {text: "Back to Prices", callback_data: "price"}
+                    ]
+                ]
+    
+            }
+        });
+
+    } catch (err) {
+        ctx.reply("Error Encountered");
+        console.log(err.message);
+    }
+    //https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=IND
 });
 
 bot.launch();
